@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">
+        <i class="fas fa-search me-2"></i>"{{ query }}" için Arama Sonuçları
+    </h2>
+
+    {% if urunler %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for urun in urunler %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ urun.resim or 'https://placehold.co/300x200?text=Urun' }}" class="card-img-top" alt="{{ urun.ad }}"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ urun.ad }}</h5>
+                    <p class="card-text text-muted">{{ urun.aciklama }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0 text-primary">{{ urun.fiyat }} ₺</span>
+                        <a href="{{ url_for('urun_detay', id=urun.id) }}"
+                            class="btn btn-outline-primary btn-sm">İncele</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        <h4><i class="fas fa-exclamation-triangle me-2"></i>Sonuç Bulunamadı</h4>
+        <p>Aradığınız kriterlere uygun ürün bulunamadı. Lütfen farklı anahtar kelimeler deneyin.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Ana Sayfaya Dön</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

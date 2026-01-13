@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Kurye Paneli</h2>
+
+    <!-- Aktif Görevler -->
+    <div class="card shadow-sm mb-5 border-start border-4 border-warning">
+        <div class="card-header bg-white">
+            <h4 class="text-primary mb-0"><i class="fas fa-motorcycle me-2"></i>Aktif Görevler</h4>
+        </div>
+        <div class="card-body">
+            {% if active_jobs %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for is in active_jobs %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 bg-light">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-warning text-dark">{{ is.durum }}</span>
+                                <small class="text-muted">#{{ is.id }}</small>
+                            </div>
+                            <h5 class="card-title">{{ is.ad }} {{ is.soyad }}</h5>
+                            <p class="card-text text-muted mb-2">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                {{ is.adres_basligi }}: {{ is.acik_adres }}
+                            </p>
+                            {% if is.siparis_notu %}
+                            <div class="alert alert-warning py-1 px-2 mb-2 small">
+                                <i class="fas fa-sticky-note me-1"></i> {{ is.siparis_notu }}
+                            </div>
+                            {% endif %}
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ is.acik_adres }}"
+                                target="_blank" class="btn btn-sm btn-outline-info w-100 mb-3">
+                                <i class="fas fa-location-arrow me-1"></i> Haritada Aç
+                            </a>
+                            <div class="fw-bold mb-3 text-end">{{ is.toplam_tutar }} ₺</div>
+
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-sm btn-outline-primary bg-white"
+                                    href="{{ url_for('siparis_detay', id=is.id) }}">Detay</a>
+                                {% if is.durum == 'KURYE_ATANDI' or is.durum == 'HAZIRLANIYOR' %}
+                                <form method="POST" action="{{ url_for('kurye_islem', id=is.id, action='teslim_al') }}">
+                                    <button type="submit" class="btn btn-warning w-100">
+                                        <i class="fas fa-box-open me-1"></i> Teslim Al (Yola Çık)
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                {% if is.durum == 'YOLDA' or is.durum == 'KURYEDE' %}
+                                <form method="POST" action="{{ url_for('kurye_islem', id=is.id, action='teslim_et') }}"
+                                    onsubmit="return confirm('Müşteriye teslim edildi olarak işaretlenecek. Emin misin?');">
+                                    <button type="submit" class="btn btn-success w-100 text-white">
+                                        <i class="fas fa-check-circle me-1"></i> Teslim Edildi
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <!-- Kurye sadece yanıt verebilir, ilk mesajı atamaz (Kısıtlama) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Modal for {{ is.id }} -->
+                <div class="modal fade" id="msgModal{{ is.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ url_for('mesaj_gonder') }}" method="POST">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Mesaj Gönder: {{ is.musteri_ad }} {{ is.musteri_soyad }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="alici_rol" value="MUSTERI">
+                                    <input type="hidden" name="alici_id" value="{{ is.musteri_id }}">
+                                    <div class="mb-3">
+                                        <label>Konu</label>
+                                        <input type="text" name="konu" class="form-control"
+                                            value="Sipariş #{{ is.id }} Hakkında" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Mesaj</label>
+                                        <textarea name="mesaj" class="form-control" rows="3" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Gönder</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-check-circle fa-3x mb-3 text-success opacity-50"></i>
+                <p>Şu an aktif bir göreviniz yok.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Geçmiş Görevler -->
+    <div class="card shadow-sm border-start border-4 border-secondary">
+        <div class="card-header bg-white">
+            <h5 class="text-secondary mb-0"><i class="fas fa-history me-2"></i>Geçmiş Teslimatlar</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sipariş No</th>
+                            <th>Müşteri</th>
+                            <th>Tarih</th>
+                            <th class="text-end">Tutar</th>
+                            <th class="text-center">Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in past_jobs %}
+                        <tr>
+                            <td>#{{ job.id }}</td>
+                            <td>{{ job.ad }} {{ job.soyad }}</td>
+                            <td class="small text-muted">{{ job.tarih }}</td>
+                            <td class="text-end fw-bold">{{ job.toplam_tutar }} ₺</td>
+                            <td class="text-center"><span class="badge bg-success">Teslim Edildi</span></td>
+                            <td class="text-end">
+                                <a href="{{ url_for('siparis_detay', id=job.id) }}"
+                                    class="btn btn-sm btn-light border">Detay</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Henüz geçmiş teslimat yok.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

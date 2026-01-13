@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Müşteri Yönetimi</h2>
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Panele Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Müşteri Bilgisi</th>
+                            <th>İletişim</th>
+                            <th class="text-center">Sipariş Sayısı</th>
+                            <th class="text-center">Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in musteriler %}
+                        <tr>
+                            <td>#{{ m.id }}</td>
+                            <td>
+                                <div class="fw-bold">{{ m.ad }} {{ m.soyad }}</div>
+                                <div class="text-muted small">@{{ m.k_adi }}</div>
+                            </td>
+                            <td>
+                                <div><i class="fas fa-envelope me-1 text-muted"></i> {{ m.email }}</div>
+                                <div><i class="fas fa-phone me-1 text-muted"></i> {{ m.telefon }}</div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info rounded-pill">{{ m.siparis_sayisi }}</span>
+                            </td>
+                            <td class="text-center">
+                                {% if m.aktif %}
+                                <span class="badge bg-success">Aktif</span>
+                                {% else %}
+                                <span class="badge bg-danger">Pasif</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Kayıtlı müşteri yok.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

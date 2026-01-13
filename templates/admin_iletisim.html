@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-envelope me-2"></i>Gelen Mesajlar</h2>
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Panele Dön
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if messages %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Gönderen</th>
+                            <th>Konu</th>
+                            <th>Mesaj</th>
+                            <th>Yanıt Durumu</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in messages %}
+                        <tr>
+                            <td>{{ m.tarih.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td class="fw-bold">{{ m.ad_soyad }}</td>
+                            <td>{{ m.konu }}</td>
+                            <td
+                                style="max-width: 300px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                {{ m.mesaj }}
+                            </td>
+                            <td>
+                                {% if m.admin_yaniti %}
+                                <span class="badge bg-success">Yanıtlandı</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Bekliyor</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#msgModal{{ m.id }}">
+                                    İncele & Yanıtla
+                                </button>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin_iletisim_sil', id=m.id) }}" method="POST"
+                                    onsubmit="return confirm('Silmek istediğine emin misin?');">
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info border-0">
+                <i class="fas fa-info-circle me-2"></i> Henüz mesaj yok.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modals Outside Table -->
+    {% if messages %}
+    {% for m in messages %}
+    <div class="modal fade" id="msgModal{{ m.id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mesaj Detayı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="fw-bold">Gönderen:</label> {{ m.ad_soyad }}
+                        {% if m.musteri_id %} <span class="badge bg-info ms-2">Üye Müşteri</span> {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Konu:</label> {{ m.konu }}
+                    </div>
+                    <div class="p-3 bg-light rounded mb-3">
+                        {{ m.mesaj }}
+                    </div>
+
+                    <hr>
+
+                    {% if m.admin_yaniti %}
+                    <div class="alert alert-success">
+                        <strong>Yanıtınız ({{ m.yanit_tarihi }}):</strong><br>
+                        {{ m.admin_yaniti }}
+                    </div>
+                    {% else %}
+                    <h5>Yanıtla</h5>
+                    <form action="{{ url_for('admin_iletisim_yanitla', id=m.id) }}" method="POST">
+                        <div class="mb-3">
+                            <textarea name="yanit" class="form-control" rows="4" placeholder="Müşteriye yanıtınız..."
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i
+                                class="fas fa-paper-plane me-2"></i>Gönder</button>
+                    </form>
+                    {% endif %}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuna Fırın & Lezzet</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Renk Paleti */
+            --primary: #e67e22;
+            /* Sıcak Ekmek Rengi */
+            --primary-hover: #d35400;
+            --secondary: #2c3e50;
+            /* Koyu Mavi/Gri */
+            --bg-body: #fdfbf7;
+            /* Hafif Krem Arka Plan */
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --accent: #f1c40f;
+            /* Yıldızlar/Vurgular için */
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            overflow-y: scroll;
+            /* Scrollbarı hep göster (zıplamayı önler) */
+        }
+
+        /* Navbar Özelleştirme */
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--secondary) !important;
+            margin: 0 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary) !important;
+        }
+
+        /* Butonlar */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(230, 126, 34, 0.3);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 50px;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Kartlar */
+        .card {
+            border: none;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            /* transform kaldırıldı - modal titremesine sebep oluyordu */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Modal açıkken arka plan sabit kalsın */
+        body.modal-open .card {
+            transform: none !important;
+        }
+
+        /* Flash Mesajları */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary);
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: auto;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        footer h5 {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-bread-slice me-2"></i>{{ site_ayarlari.site_baslik }}
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+
+                    {% if session.get('rol') == 'MUSTERI' %}
+                    <!-- Arama -->
+                    <li class="nav-item me-lg-3 my-2 my-lg-0">
+                        <form action="{{ url_for('ara') }}" method="GET" class="position-relative">
+                            <input type="text" name="q" class="form-control rounded-pill ps-4 pe-5"
+                                placeholder="Lezzet ara..." style="background: #f8f9fa; border:none; min-width: 200px;">
+                            <button type="submit"
+                                class="btn position-absolute top-50 end-0 translate-middle-y text-muted pe-3 border-0 bg-transparent">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('hakkimizda') }}">Hakkımızda</a>
+                    </li>
+                    {% if session.get('rol') == 'MUSTERI' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('iletisim') }}">İletişim</a>
+                    </li>
+                    {% endif %}
+
+                    {% if session.get('user_id') %}
+                    <!-- Üye Menüsü -->
+                    {% if session.get('rol') == 'MUSTERI' %}
+                    <li class="nav-item position-relative mx-2">
+                        <a class="nav-link fs-5" href="{{ url_for('sepet') }}">
+                            <i class="fas fa-shopping-basket"></i>
+                            {% if sepet_count > 0 %}
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                style="font-size: 0.6rem;">
+                                {{ sepet_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle btn btn-light rounded-pill px-3 py-1 border" href="#"
+                            role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> {{ session.get('k_adi') }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 animated fadeIn">
+                            {% if session.get('rol') == 'MUSTERI' %}
+                            <li><a class="dropdown-item py-2" href="{{ url_for('profil') }}"><i
+                                        class="fas fa-user me-2 text-primary"></i>Profilim</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('favorilerim') }}"><i
+                                        class="fas fa-heart me-2 text-danger"></i>Favorilerim</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('yorumlarim') }}"><i
+                                        class="fas fa-comment ms-0 me-2 text-warning"></i>Yorumlarım</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('mesajlarim') }}"><i
+                                        class="fas fa-envelope ms-0 me-2 text-info"></i>Mesajlarım</a></li>
+                            {% endif %}
+
+                            {% if session.get('rol') == 'ADMIN' %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header text-uppercase small ls-1">Yönetim</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_siparisler') }}">Siparişler</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_urunler') }}">Ürünler</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_panel') }}">Panel Özeti</a></li>
+                            {% endif %}
+
+                            {% if session.get('rol') == 'KURYE' %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item fw-bold text-primary" href="{{ url_for('kurye_panel') }}">🚀
+                                    Kurye Paneli</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('kurye_mesajlar') }}"><i
+                                        class="fas fa-envelope me-2"></i>Mesajlar</a></li>
+                            {% endif %}
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger py-2" href="{{ url_for('logout') }}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-primary me-2" href="{{ url_for('login') }}">Giriş</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="{{ url_for('register') }}">Kayıt Ol</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="flex-grow-1">
+        <div class="container py-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-info-circle me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h5 class="mb-4"><i class="fas fa-bread-slice me-2"></i>Tuna Fırın</h5>
+                    <p class="small text-white-50">Geleneksel lezzetleri modern dokunuşlarla sofralarınıza getiriyoruz.
+                        Her gün taze, her gün sıcak.</p>
+                </div>
+
+                <div class="col-lg-4">
+                    <h5 class="mb-4">İletişim</h5>
+                    <p class="small text-white-50 mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ site_ayarlari.adres
+                        }}</p>
+                    <p class="small text-white-50 mb-2"><i class="fas fa-phone me-2"></i>{{ site_ayarlari.telefon }}</p>
+                    <p class="small text-white-50"><i class="fas fa-envelope me-2"></i>{{ site_ayarlari.email }}</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center small text-white-50">
+                &copy; {{ now_year }} Tuna Fırın Otomasyonu. Tüm hakları saklıdır.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

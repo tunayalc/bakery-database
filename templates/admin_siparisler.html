@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Siparişler</h2>
+        <form class="d-flex gap-2 align-items-end" method="GET">
+            <div>
+                <label class="form-label small text-muted mb-0">Başlangıç</label>
+                <input type="date" name="start_date" class="form-control form-control-sm"
+                    value="{{ request.args.get('start_date', '') }}">
+            </div>
+            <div>
+                <label class="form-label small text-muted mb-0">Bitiş</label>
+                <input type="date" name="end_date" class="form-control form-control-sm"
+                    value="{{ request.args.get('end_date', '') }}">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> Filtrele</button>
+            <a href="{{ url_for('admin_siparisler') }}" class="btn btn-sm btn-outline-secondary"> Sıfırla</a>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Devam Edenler</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Müşteri</th>
+                                    <th>Tarih</th>
+                                    <th>Kurye</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in devam_eden %}
+                                <tr>
+                                    <td>#{{ s.id }}</td>
+                                    <td>{{ s.musteri_ad }} {{ s.musteri_soyad }}</td>
+                                    <td>{{ s.tarih }}</td>
+                                    <td>
+                                        {% if s.kurye_id %}#{{ s.kurye_id }}{% else %}<span
+                                            class="text-muted">Yok</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {{ s.toplam_tutar }} ₺
+                                        {% if s.kupon_kodu %}
+                                        <span class="badge bg-success">{{ s.kupon_kodu }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ s.durum }}</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ url_for('siparis_detay', id=s.id) }}">Detay</a>
+                                        {% if s.durum == 'OLUSTURULDU' %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin_siparis_islem', id=s.id, action='onayla') }}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success">Onayla</button>
+                                        </form>
+                                        <form method="POST"
+                                            action="{{ url_for('admin_siparis_islem', id=s.id, action='reddet') }}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Reddet</button>
+                                        </form>
+                                        {% elif s.durum == 'ONAYLANDI' %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin_siparis_islem', id=s.id, action='hazirla') }}"
+                                            class="d-inline">
+                                            <button type="submit"
+                                                class="btn btn-sm btn-warning text-dark">Hazırlanıyor</button>
+                                        </form>
+                                        {% elif s.durum == 'HAZIRLANIYOR' %}
+                                        <form method="POST" action="{{ url_for('admin_kurye_ata', id=s.id) }}"
+                                            class="d-inline">
+                                            <select name="kurye_id" class="form-select form-select-sm d-inline w-auto">
+                                                {% for k in kuryeler %}
+                                                <option value="{{ k.id }}" {% if s.kurye_id and s.kurye_id==k.id
+                                                    %}selected{% endif %}>
+                                                    {{ k.ad }} {{ k.soyad }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <button class="btn btn-sm btn-outline-secondary">Kurye Ata</button>
+                                        </form>
+                                        {% elif s.durum == 'KURYE_ATANDI' %}
+                                        <span class="text-muted small">Kurye atanmış</span>
+                                        {% endif %}
+
+                                        {% if s.durum in ['OLUSTURULDU','ONAYLANDI','HAZIRLANIYOR','KURYE_ATANDI'] %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin_siparis_islem', id=s.id, action='iptal') }}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">İptal</button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">Kayıt yok.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Biten/İptal/Reddedilen</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Müşteri</th>
+                                    <th>Tarih</th>
+                                    <th>Kurye</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in bitti %}
+                                <tr>
+                                    <td>#{{ s.id }}</td>
+                                    <td>{{ s.musteri_ad }} {{ s.musteri_soyad }}</td>
+                                    <td>{{ s.tarih }}</td>
+                                    <td>
+                                        {% if s.kurye_id %}#{{ s.kurye_id }}{% else %}<span
+                                            class="text-muted">Yok</span>{% endif %}
+                                    </td>
+                                    <td>{{ s.toplam_tutar }} ₺</td>
+                                    <td>{{ s.durum }}</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ url_for('siparis_detay', id=s.id) }}">Detay</a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">Kayıt yok.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

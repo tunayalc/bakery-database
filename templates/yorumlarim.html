@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Yorumlarım</h2>
+        <a href="{{ url_for('profil') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Profilime Dön
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            {% if yorumlar %}
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    {% for y in yorumlar %}
+                    <div class="list-group-item p-4">
+                        <div class="d-flex w-100 justify-content-between mb-2">
+                            <h5 class="mb-1 text-primary">{{ y.urun_ad }}</h5>
+                            <small class="text-muted">{{ y.tarih }}</small>
+                        </div>
+                        <div class="mb-2">
+                            {% for i in range(y.puan) %}<i class="fas fa-star text-warning"></i>{% endfor %}
+                            {% for i in range(5 - y.puan) %}<i class="far fa-star text-warning"></i>{% endfor %}
+                        </div>
+                        <p class="mb-1 fst-italic">"{{ y.metin }}"</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="far fa-comment-dots fa-3x mb-3"></i>
+                <h4>Henüz yorum yapmadınız.</h4>
+                <p>Sipariş verdiğiniz ürünleri değerlendirerek bize destek olabilirsiniz.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

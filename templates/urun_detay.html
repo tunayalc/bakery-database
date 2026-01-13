@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Ürün Görseli -->
+
+
+        <!-- Ürün Bilgileri -->
+        <div class="col-lg-8 offset-lg-2">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Anasayfa</a></li>
+                    <li class="breadcrumb-item active">{{ kategori.ad }}</li>
+                    <li class="breadcrumb-item active">{{ urun.ad }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="fw-bold">{{ urun.ad }}</h1>
+            <p class="lead text-muted">{{ urun.aciklama }}</p>
+
+            <div class="card p-4 bg-light shadow-sm mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-primary mb-0">{{ urun.fiyat }} ₺</h2>
+                    <span class="badge bg-{{ 'success' if stok > 0 else 'danger' }}">
+                        {{ 'Stokta Var (' ~ stok ~ ')' if stok > 0 else 'Tükendi' }}
+                    </span>
+                </div>
+
+                <form action="{{ url_for('sepet_ekle') }}" method="POST">
+                    <input type="hidden" name="urun_id" value="{{ urun.id }}">
+
+                    <div class="mb-4">
+                        <label class="form-label">Adet:</label>
+                        <div class="input-group" style="width: 140px;">
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="document.getElementById('adet').stepDown()">-</button>
+                            <input type="number" name="adet" id="adet" class="form-control text-center" value="1"
+                                min="1" max="{{ stok }}">
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="document.getElementById('adet').stepUp()">+</button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {% if not session.get('user_id') or session.get('rol') == 'MUSTERI' %}
+                        {% if stok > 0 %}
+                        <button type="submit" class="btn btn-success btn-lg">🛒 Sepete Ekle</button>
+                        {% else %}
+                        <button disabled class="btn btn-secondary btn-lg">Stokta Yok</button>
+                        {% endif %}
+                        {% else %}
+                        <div class="alert alert-warning text-center">
+                            <small>Personel hesabı ile sipariş verilemez.</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            {% if session.get('user_id') and session.get('rol') == 'MUSTERI' %}
+            <div class="card p-3 shadow-sm mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Favori</strong>
+                        <div class="text-muted small">Bu ürünü favorilerine ekle.</div>
+                    </div>
+                    {% if favoride %}
+                    <form method="POST" action="{{ url_for('favori_sil') }}">
+                        <input type="hidden" name="urun_id" value="{{ urun.id }}">
+                        <button class="btn btn-outline-danger btn-sm">Favoriden Çıkar</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('favori_ekle') }}">
+                        <input type="hidden" name="urun_id" value="{{ urun.id }}">
+                        <button class="btn btn-outline-primary btn-sm">Favorilere Ekle</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card p-3 shadow-sm mt-3">
+                <h5 class="mb-3">Yorum Yap</h5>
+                {% if yorum_izni %}
+                <form method="POST" action="{{ url_for('yorum_ekle') }}" class="d-grid gap-2">
+                    <input type="hidden" name="urun_id" value="{{ urun.id }}">
+                    <div class="row g-2">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label">Puan</label>
+                            <select name="puan" class="form-select">
+                                {% for p in range(1,6) %}
+                                <option value="{{ p }}" {% if p==5 %}selected{% endif %}>{{ p }} Yıldız</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <label class="form-label">Yorumunuz</label>
+                            <textarea name="metin" rows="2" class="form-control" placeholder="Deneyiminizi yazın..."
+                                required></textarea>
+                        </div>
+                    </div>
+                    <div class="text-end mt-2">
+                        <button class="btn btn-primary btn-sm">Gönder</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-light border mb-0 text-muted small">
+                    <i class="fas fa-info-circle me-1"></i> Yorum yapabilmek için bu ürünü satın alıp teslim almış
+                    olmalısınız.
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Yorumlar Listesi -->
+            <div class="mt-5">
+                <h4 class="mb-4">Müşteri Değerlendirmeleri ({{ yorumlar|length }})</h4>
+                {% if yorumlar %}
+                <div class="list-group">
+                    {% for y in yorumlar %}
+                    <div class="list-group-item list-group-item-action bg-light border-0 mb-2 rounded p-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold">{{ y.ad }} {{ y.soyad[0] }}.</h6>
+                            <small class="text-muted">{{ y.tarih.strftime('%d.%m.%Y') }}</small>
+                        </div>
+                        <div class="mb-2 text-warning small">
+                            {% for i in range(y.puan) %}<i class="fas fa-star"></i>{% endfor %}
+                            {% for i in range(5 - y.puan) %}<i class="far fa-star"></i>{% endfor %}
+                        </div>
+                        <p class="mb-1 text-dark">{{ y.metin }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted fst-italic">Henüz yorum yapılmamış. İlk yorumu sen yap!</p>
+                {% endif %}
+            </div>
+
+            <div class="mt-4">
+                <h5><i class="fas fa-truck text-muted me-2"></i>Hızlı Teslimat</h5>
+                <p class="text-muted small">Siparişiniz kuryelerimiz tarafından en kısa sürede teslim edilir.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

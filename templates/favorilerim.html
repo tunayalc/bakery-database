@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Favorilerim</h2>
+        <a href="{{ url_for('profil') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Profilime Dön
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for urun in favoriler %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ urun.ad }}</h5>
+                        <form action="{{ url_for('favori_sil') }}" method="POST">
+                            <input type="hidden" name="urun_id" value="{{ urun.id }}">
+                            <button class="btn btn-sm btn-outline-danger border-0" title="Favorilerden Çıkar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <p class="card-text text-primary fw-bold mb-3">{{ urun.fiyat }} ₺</p>
+                    <a href="{{ url_for('urun_detay', id=urun.id) }}"
+                        class="btn btn-outline-primary w-100 rounded-pill">İncele</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted mb-3"><i class="far fa-heart fa-3x"></i></div>
+            <h4>Henüz favoriniz yok.</h4>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Lezzetleri Keşfet</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

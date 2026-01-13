@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Yönetim</h2>
+
+    <div class="row g-4">
+        <!-- Siparişler -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-primary">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-2"><i class="fas fa-clipboard-list"></i></div>
+                    <h5>Siparişler</h5>
+                    <a href="{{ url_for('admin_siparisler') }}" class="btn btn-sm btn-primary w-100 mt-2">Yönet</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ürünler -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-success">
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-2"><i class="fas fa-box-open"></i></div>
+                    <h5>Ürünler</h5>
+                    <a href="{{ url_for('admin_urunler') }}" class="btn btn-sm btn-success w-100 mt-2">Yönet</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Müşteriler -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-info">
+                <div class="card-body text-center">
+                    <div class="display-4 text-info mb-2"><i class="fas fa-users"></i></div>
+                    <h5>Müşteriler</h5>
+                    <a href="{{ url_for('admin_musteriler') }}" class="btn btn-sm btn-info w-100 mt-2">Listele</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yorumlar -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-start border-4 border-warning">
+                <div class="card-body text-center">
+                    <div class="display-4 text-warning mb-2"><i class="fas fa-comments"></i></div>
+                    <h5>Yorumlar</h5>
+                    <a href="{{ url_for('admin_yorumlar') }}" class="btn btn-sm btn-warning w-100 mt-2">İncele</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yeni Satır: İletişim & Ayarlar -->
+    <div class="row g-4 mt-2">
+        <!-- Site Ayarları -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-start border-4 border-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="display-4 text-secondary me-3"><i class="fas fa-cogs"></i></div>
+                        <div>
+                            <h5>Site Ayarları</h5>
+                            <p class="text-muted mb-0">Başlık, telefon, adres güncelleme.</p>
+                        </div>
+                        <a href="{{ url_for('admin_ayarlar') }}"
+                            class="btn btn-outline-secondary ms-auto stretched-link">Düzenle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İletişim Mesajları -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-start border-4 border-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="display-4 text-danger me-3"><i class="fas fa-envelope-open-text"></i></div>
+                        <div>
+                            <h5>Gelen Mesajlar</h5>
+                            <p class="text-muted mb-0">İletişim formundan gelenler.</p>
+                        </div>
+                        <a href="{{ url_for('admin_mesajlar') }}"
+                            class="btn btn-outline-danger ms-auto stretched-link">Oku</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Üçüncü Satır: Kuryeler & Kuponlar -->
+    <div class="row g-4 mt-2">
+        <!-- Kuryeler -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-start border-4 border-dark">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="display-4 text-dark me-3"><i class="fas fa-motorcycle"></i></div>
+                        <div>
+                            <h5>Kuryeler</h5>
+                            <p class="text-muted mb-0">Kurye ekle, düzenle, sil.</p>
+                        </div>
+                        <a href="{{ url_for('admin_kuryeler') }}" class="btn btn-dark ms-auto">Yönet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kuponlar -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="display-4 text-success me-3"><i class="fas fa-tags"></i></div>
+                        <div>
+                            <h5>Kuponlar</h5>
+                            <p class="text-muted mb-0">İndirim kuponlarını yönet.</p>
+                        </div>
+                        <a href="{{ url_for('admin_kuponlar') }}" class="btn btn-outline-success ms-auto">Yönet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

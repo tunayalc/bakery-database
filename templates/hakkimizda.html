@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 text-center my-5">
+        <h1 class="display-4 fw-bold text-primary mb-3">Hikayemiz</h1>
+        <p class="lead text-muted mb-5">
+            1990'dan beri değişmeyen lezzet, değişmeyen tutku.
+        </p>
+    </div>
+</div>
+
+<div class="row align-items-center mb-5">
+    <div class="col-md-6 mb-4 mb-md-0">
+        <img src="{{ url_for('static', filename='img/firin_hikaye.jpg') }}" class="img-fluid rounded-4 shadow"
+            alt="Fırınımız">
+    </div>
+    <div class="col-md-6">
+        <h3 class="fw-bold mb-3">Neden Tuna Fırın?</h3>
+        <p>
+            Tuna Fırın olarak amacımız, geleneksel fırıncılık sanatını modern teknoloji ve hijyen standartlarıyla
+            buluşturmaktır.
+            Her sabah gün doğmadan başlayan serüvenimiz, sizlerin sofrasına en taze, en sıcak ve en lezzetli ürünleri
+            ulaştırmak için devam ediyor.
+        </p>
+        <p>
+            Kullandığımız unlardan, mayalara kadar her malzemeyi özenle seçiyor, katkı maddesi kullanmadan en doğal
+            haliyle üretiyoruz.
+            Çünkü biliyoruz ki, gerçek lezzet doğallıktan gelir.
+        </p>
+        <ul class="list-unstyled mt-4">
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> %100 Doğal Malzemeler</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Geleneksel Taş Fırın Lezzeti</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Hijyenik Üretim Ortamı</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Güler Yüzlü Hizmet</li>
+        </ul>
+    </div>
+</div>
+
+<div class="bg-white rounded-4 shadow p-5 mb-5 text-center">
+    <h3 class="fw-bold mb-4">Sizden Gelenler</h3>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="p-3 border rounded-3 h-100">
+                <div class="text-warning mb-2">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="text-muted small">"Sabahları aldığım simidin çıtırlığı beni benden alıyor. Kesinlikle tavsiye
+                    ederim!"</p>
+                <div class="fw-bold small">- Ayşe Y.</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="p-3 border rounded-3 h-100">
+                <div class="text-warning mb-2">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="text-muted small">"Ekşi mayalı ekmekleri bir harika. Şehirdeki en iyi fırın."</p>
+                <div class="fw-bold small">- Mehmet K.</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="p-3 border rounded-3 h-100">
+                <div class="text-warning mb-2">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="text-muted small">"Siparişlerim hep sıcak geliyor. Kurye arkadaşlar çok kibar."</p>
+                <div class="fw-bold small">- Canan T.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

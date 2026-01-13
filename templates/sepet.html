@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Sepetim</h2>
+
+    <div class="row">
+        <div class="col-lg-8">
+            {% if items %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th class="text-center">Adet</th>
+                                    <th class="text-end">Fiyat</th>
+                                    <th class="text-end">Toplam</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <div class="fw-bold">{{ item.urun_ad }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('sepet_guncelle', id=item.sepet_id, action='azalt') }}"
+                                                class="btn btn-outline-secondary">-</a>
+                                            <span class="btn btn-light disabled" style="width: 40px;">{{ item.adet
+                                                }}</span>
+                                            <a href="{{ url_for('sepet_guncelle', id=item.sepet_id, action='arttir') }}"
+                                                class="btn btn-outline-secondary">+</a>
+                                        </div>
+                                    </td>
+                                    <td class="text-end text-muted">{{ item.fiyat }} ₺</td>
+                                    <td class="text-end fw-bold">{{ item.fiyat * item.adet }} ₺</td>
+                                    <td class="text-end">
+                                        <a href="{{ url_for('sepet_sil', id=item.sepet_id) }}"
+                                            class="btn btn-link text-danger p-0">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 bg-white rounded shadow-sm">
+                <i class="fas fa-shopping-basket fa-4x text-muted mb-3 opacity-50"></i>
+                <h4>Sepetiniz boş</h4>
+                <p class="text-muted">Lezzetli ürünlerimizi keşfetmek için ana sayfaya dönebilirsiniz.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Alışverişe Başla</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if items %}
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Sipariş Özeti</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Ara Toplam</span>
+                        <span>{{ toplam }} ₺</span>
+                    </div>
+
+                    {% if indirim_tutari > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Kupon İndirimi (%{{ session['indirim'] }})</span>
+                        <span>-{{ indirim_tutari }} ₺</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Genel Toplam</span>
+                        <span class="fw-bold fs-5 text-success">{{ odenecek }} ₺</span>
+                    </div>
+                    {% else %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Genel Toplam</span>
+                        <span class="fw-bold fs-5">{{ toplam }} ₺</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Kupon Alanı -->
+                    <form method="POST" class="mb-4">
+                        <label class="form-label small text-muted">İndirim Kuponu</label>
+                        <div class="input-group">
+                            <input type="text" name="kupon_kodu" class="form-control" placeholder="Varsa kodunuz..."
+                                value="{{ request.form.get('kupon_kodu', '') }}">
+                            <button class="btn btn-outline-primary" type="submit">Uygula</button>
+                        </div>
+                        <div class="form-text x-small">İpucu: "TUNA20" deneyebilirsin.</div>
+                    </form>
+
+                    <a href="{{ url_for('siparis_olustur') }}" class="btn btn-primary w-100 py-2 fw-bold">
+                        Siparişi Tamamla <i class="fas fa-chevron-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

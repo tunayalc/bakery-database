@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Müşteri Kayıt</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Ad</label>
+                        <input type="text" name="ad" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soyad</label>
+                        <input type="text" name="soyad" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefon</label>
+                        <input type="text" name="telefon" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şifre</label>
+                        <input type="password" name="sifre" class="form-control" required>
+                    </div>
+
+                    <div class="alert alert-info small">
+                        <i class="fas fa-info-circle"></i> Kayıt sonrası size özel bir <strong>Kullanıcı Adı</strong>
+                        verilecektir. (Email adresinizin ilk kısmı)
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                    </div>
+                </form>
+                <div class="mt-3 text-center">
+                    <small>Zaten üye misiniz? <a href="{{ url_for('login') }}">Giriş Yap</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

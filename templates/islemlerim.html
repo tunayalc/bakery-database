@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">İşlemlerim</h2>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('index') }}">Anasayfa</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Sipariş Durum İşlemleri (siparis_durum_log)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Sipariş</th>
+                                    <th>Eski</th>
+                                    <th>Yeni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for l in durum_islemleri %}
+                                <tr>
+                                    <td class="text-muted small">{{ l.tarih }}</td>
+                                    <td>
+                                        <a href="{{ url_for('siparis_detay', id=l.siparis_id) }}">#{{ l.siparis_id }}</a>
+                                    </td>
+                                    <td class="small">{{ l.eski_durum }}</td>
+                                    <td class="small fw-bold">{{ l.yeni_durum }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Kayıt yok.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Stok İşlemleri (stok_hareketi)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Ürün</th>
+                                    <th>Tip</th>
+                                    <th class="text-end">Miktar</th>
+                                    <th class="text-end">Sipariş</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sh in stok_islemleri %}
+                                <tr>
+                                    <td class="text-muted small">{{ sh.created_at }}</td>
+                                    <td class="small">{{ sh.urun_ad }}</td>
+                                    <td class="small">{{ sh.hareket_tipi }}</td>
+                                    <td class="text-end fw-bold">{{ sh.miktar }}</td>
+                                    <td class="text-end small">
+                                        {% if sh.siparis_id %}
+                                        <a href="{{ url_for('siparis_detay', id=sh.siparis_id) }}">#{{ sh.siparis_id }}</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">Kayıt yok.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if session.get('rol') == 'MUSTERI' %}
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Favorilerim (favoriler)</h5>
+                </div>
+                <div class="card-body">
+                    {% if favoriler %}
+                    <ul class="mb-0">
+                        {% for f in favoriler %}
+                        <li>{{ f.urun_ad }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-muted">Favori yok.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Yorumlarım (yorum)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Sipariş</th>
+                                    <th>Ürün</th>
+                                    <th class="text-end">Puan</th>
+                                    <th>Onay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for y in yorumlar %}
+                                <tr>
+                                    <td class="text-muted small">{{ y.tarih }}</td>
+                                    <td><a href="{{ url_for('siparis_detay', id=y.siparis_id) }}">#{{ y.siparis_id }}</a></td>
+                                    <td class="small">{{ y.urun_ad }}</td>
+                                    <td class="text-end fw-bold">{{ y.puan }}</td>
+                                    <td class="small">{{ 'Onaylı' if y.onay_durumu else 'Bekliyor' }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">Yorum yok.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

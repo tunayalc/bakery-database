@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="display-1 text-primary mb-3"><i class="fas fa-user-circle"></i></div>
+                    <h4>{{ session['ad_soyad'] }}</h4>
+                    <p class="text-muted mb-0">Rol: {{ session['rol'] }}</p>
+                    <hr>
+                    <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="modal"
+                        data-bs-target="#modalProfilDuzenle">
+                        Bilgilerimi Düzenle
+                    </button>
+                    <div class="d-grid">
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Çıkış Yap</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Adreslerim</h5>
+                </div>
+                <div class="card-body">
+                    {% if adresler %}
+                    <div class="d-grid gap-2">
+                        {% for a in adresler %}
+                        <div class="p-2 border rounded position-relative">
+                            <div class="d-flex justify-content-between pe-4">
+                                <strong>{{ a.adres_basligi }}</strong>
+                                {% if a.varsayilan %}<span class="badge bg-success">Varsayılan</span>{% endif %}
+                            </div>
+                            <div class="text-muted small">{{ a.acik_adres }}</div>
+
+                            <!-- Adres Sil Butonu -->
+                            <form action="{{ url_for('adres_sil', id=a.id) }}" method="POST"
+                                class="position-absolute top-0 end-0 mt-2 me-2">
+                                <button type="submit" class="btn btn-sm text-danger p-0" title="Sil"
+                                    onclick="return confirm('Adresi silmek istediğinize emin misiniz?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="mb-2 text-muted">Henüz adres eklenmemiş.</p>
+                    {% endif %}
+                    <hr>
+                    <form method="POST" action="{{ url_for('adres_ekle') }}" class="d-grid gap-2">
+                        <div>
+                            <label class="form-label">Adres Başlığı</label>
+                            <input name="adres_basligi" class="form-control form-control-sm" placeholder="Ev, İş"
+                                required>
+                        </div>
+                        <div>
+                            <label class="form-label">Açık Adres</label>
+                            <textarea name="acik_adres" rows="3" class="form-control form-control-sm"
+                                required></textarea>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="on" id="varsayilan"
+                                name="varsayilan">
+                            <label class="form-check-label" for="varsayilan">Varsayılan yap</label>
+                        </div>
+                        <button class="btn btn-primary btn-sm">Adres Ekle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h2 class="mb-4">Siparişlerim</h2>
+
+            <h5 class="text-primary">Devam Eden</h5>
+            {% if siparis_devam %}
+            <div class="d-grid gap-3 mb-4">
+                {% for s in siparis_devam %}
+                <div class="card shadow-sm border-start border-4 border-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Sipariş #{{ s.id }}</h5>
+                            <span class="badge bg-info text-dark">{{ s.durum }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span><i class="far fa-calendar-alt me-1"></i> {{ s.tarih }}</span>
+                            <span class="fs-6 fw-bold text-dark">{{ s.toplam_tutar }} ₺</span>
+                        </div>
+                        <div class="mt-2 text-end">
+                            <a class="btn btn-sm btn-outline-primary"
+                                href="{{ url_for('siparis_detay', id=s.id) }}">Detay</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-light text-center py-3 border mb-4">
+                Devam eden sipariş yok.
+            </div>
+            {% endif %}
+
+            <h5 class="text-secondary">Geçmiş</h5>
+            {% if siparis_gecmis %}
+            <div class="d-grid gap-3">
+                {% for s in siparis_gecmis %}
+                <div
+                    class="card shadow-sm border-start border-4
+                    {% if s.durum == 'TESLIM_EDILDI' %}border-success{% elif s.durum == 'IPTAL_EDILDI' %}border-danger{% else %}border-secondary{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Sipariş #{{ s.id }}</h5>
+                            <span class="badge bg-light text-dark border">{{ s.durum }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span><i class="far fa-calendar-alt me-1"></i> {{ s.tarih }}</span>
+                            <span class="fs-6 fw-bold text-dark">{{ s.toplam_tutar }} ₺</span>
+                        </div>
+                        <div class="mt-2 text-end">
+                            <a class="btn btn-sm btn-outline-primary"
+                                href="{{ url_for('siparis_detay', id=s.id) }}">Detay</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-light text-center py-3 border">
+                Henüz geçmiş sipariş yok.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Profil Düzenle Modal -->
+<div class="modal fade" id="modalProfilDuzenle" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('profil_guncelle') }}" method="POST">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bilgilerimi Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Ad</label>
+                        <input type="text" name="ad" class="form-control" value="{{ session['ad_soyad'].split()[0] }}"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soyad</label>
+                        <input type="text" name="soyad" class="form-control"
+                            value="{{ session['ad_soyad'].split()[1] if ' ' in session['ad_soyad'] else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefon</label>
+                        <input type="tel" name="telefon" class="form-control" placeholder="05XX..." required>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Şifre (Boş bırakırsanız değişmez)</label>
+                        <input type="password" name="sifre" class="form-control" placeholder="******">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

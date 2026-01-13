@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section (Login ile) -->
+    <div class="row align-items-center p-5 mb-4 bg-light rounded-3 bg-gradient shadow-sm"
+        style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
+        <div class="col-lg-7 py-3">
+            <h1 class="display-5 fw-bold text-primary">{{ site_ayarlari.hero_baslik }}</h1>
+            <p class="fs-4">{{ site_ayarlari.hero_alt_baslik }}</p>
+            <p class="lead text-muted">Geleneksel tatlar, modern hizmet anlayışıyla buluştu.</p>
+            {% if session.get('rol') == 'MUSTERI' %}
+            <a href="#urunler" class="btn btn-primary btn-lg px-4 me-md-2" type="button">Hemen Sipariş Ver</a>
+            {% endif %}
+        </div>
+
+        <!-- Sağ taraf - Sadece giriş yapmışsa göster -->
+        {% if session.get('user_id') %}
+        <div class="col-lg-4 offset-lg-1 text-center">
+            <div class="alert alert-success shadow">
+                <h4>Hoşgeldin, {{ session['ad_soyad'] }}! 👋</h4>
+                <div class="d-grid gap-2 mt-3">
+                    {% if session.get('rol') == 'MUSTERI' %}
+                    <a href="{{ url_for('profil') }}" class="btn btn-success">Siparişlerim</a>
+                    {% endif %}
+                    {% if session.get('rol') == 'ADMIN' %}
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-danger">Yönetici Paneli</a>
+                    {% endif %}
+                    {% if session.get('rol') == 'KURYE' %}
+                    <a href="{{ url_for('kurye_panel') }}" class="btn btn-warning">Kurye Paneli</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Fırın Görseli -->
+        <div class="col-lg-4 offset-lg-1 text-center">
+            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop"
+                alt="Taze Ekmekler" class="img-fluid rounded-3 shadow-lg" style="max-height: 280px; object-fit: cover;">
+            <p class="text-muted mt-2 small">🥖 Her gün taze, her gün lezzetli!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Ürünler (Kategori Bazlı) -->
+    {% if session.get('rol') == 'MUSTERI' %}
+    <div id="urunler" class="my-5">
+        <h2 class="text-center mb-4 text-secondary">Lezzetlerimiz</h2>
+
+        <!-- Kategori Sekmeleri -->
+        <ul class="nav nav-pills justify-content-center mb-4" id="categoryTabs" role="tablist">
+            {% for kat in kategoriler %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if loop.first %}active{% endif %} px-4" id="tab-{{ kat.id }}"
+                    data-bs-toggle="pill" data-bs-target="#cat-{{ kat.id }}" type="button" role="tab">
+                    {{ kat.ad }}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Kategori İçerikleri -->
+        <div class="tab-content" id="categoryTabContent">
+            {% for kat in kategoriler %}
+            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="cat-{{ kat.id }}" role="tabpanel">
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for urun in urunler if urun.kategori_id == kat.id %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0 product-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title fw-bold mb-0 text-dark">{{ urun.ad }}</h5>
+                                    <span class="badge bg-warning text-dark">{{ urun.fiyat }} ₺</span>
+                                </div>
+                                <p class="card-text text-muted small">{{ urun.aciklama[:80] }}...</p>
+                                <div class="d-grid">
+                                    <a href="{{ url_for('urun_detay', id=urun.id) }}"
+                                        class="btn btn-outline-primary rounded-pill">İncele & Sipariş Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">Bu kategoride ürün bulunmuyor.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

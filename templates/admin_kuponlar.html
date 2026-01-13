@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Kupon Yönetimi</h2>
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Panele Dön
+        </a>
+    </div>
+
+    <!-- Kupon Ekleme Formu -->
+    <div class="card shadow-sm mb-4 border-start border-4 border-primary">
+        <div class="card-body">
+            <h5 class="card-title text-primary mb-3">Yeni Kupon Oluştur</h5>
+            <form action="{{ url_for('admin_kupon_ekle') }}" method="POST" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Kupon Kodu</label>
+                    <input type="text" name="kod" class="form-control" placeholder="Örn: YAZ2024" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">İndirim %</label>
+                    <input type="number" name="yuzde" class="form-control" placeholder="20" min="1" max="100" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Son Kullanma</label>
+                    <input type="date" name="tarih" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Açıklama</label>
+                    <input type="text" name="aciklama" class="form-control" placeholder="Kampanya notu...">
+                </div>
+                <div class="col-md-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tek_seferlik" id="tekCheck" checked>
+                        <label class="form-check-label small" for="tekCheck">
+                            Kişi başı 1 kullanım (Tek Seferlik)
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kupon Listesi -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kod</th>
+                            <th class="text-center">İndirim</th>
+                            <th>Açıklama</th>
+                            <th>Son Kullanma</th>
+                            <th class="text-center">Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k in kuponlar %}
+                        <tr>
+                            <td><span class="badge bg-light text-dark border font-monospace fs-6">{{ k.kod }}</span>
+                            </td>
+                            <td class="text-center text-success fw-bold">%{{ k.indirim_yuzdesi }}</td>
+                            <td>{{ k.aciklama }}</td>
+                            <td>{{ k.son_kullanim_tarihi }}</td>
+                            <td class="text-center">
+                                {% if k.aktif %}
+                                <span class="badge bg-success">Aktif</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Pasif</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <form action="{{ url_for('admin_kupon_sil', id=k.id) }}" method="POST"
+                                    onsubmit="return confirm('Bu kuponu silmek istediğinize emin misiniz?');">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">Kayıtlı kupon yok.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
