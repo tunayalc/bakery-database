@@ -10,7 +10,7 @@ app.secret_key = os.urandom(24)
 db_config = {
     'host': 'localhost',
     'user': 'root', 
-    'password': 'tunahan1.Tuna',
+    'password': '',
     'database': 'firin_db'
 }
 
